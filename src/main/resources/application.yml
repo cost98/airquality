@@ -1,0 +1,19 @@
+micronaut:
+  application:
+    name: airquality
+  router:
+    static-resources:
+      swagger:
+        paths: classpath:META-INF/swagger
+        mapping: /swagger/**
+      swagger-ui:
+        paths: classpath:META-INF/swagger/views/swagger-ui
+        mapping: /swagger-ui/**
+datasources:
+  default:
+    driverClassName: org.postgresql.Driver
+    db-type: postgresql
+netty:
+  default:
+    allocator:
+      max-order: 3
