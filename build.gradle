@@ -12,21 +12,60 @@ repositories {
 }
 
 dependencies {
+    implementation 'builders.dsl:spreadsheet-builder-poi:3.0.1'
+
     annotationProcessor("org.projectlombok:lombok")
-    annotationProcessor("io.micronaut:micronaut-http-validation")
-    annotationProcessor("io.micronaut.openapi:micronaut-openapi")
+    annotationProcessor("io.micronaut.openapi:micronaut-openapi:4.5.2")
+    implementation("io.swagger.core.v3:swagger-annotations")
+
     implementation("io.micronaut:micronaut-http-client")
     implementation("io.micronaut:micronaut-jackson-databind")
     implementation("io.micronaut.flyway:micronaut-flyway")
     implementation("io.micronaut.sql:micronaut-jdbc-hikari")
     implementation("io.swagger.core.v3:swagger-annotations")
     implementation("jakarta.annotation:jakarta.annotation-api")
-    implementation("org.apache.logging.log4j:log4j-core:2.19.0")
     compileOnly("org.projectlombok:lombok")
-    runtimeOnly("org.apache.logging.log4j:log4j-api:2.19.0")
-    runtimeOnly("org.apache.logging.log4j:log4j-slf4j-impl:2.17.2")
     runtimeOnly("org.postgresql:postgresql")
     implementation("io.micronaut:micronaut-validation")
+
+   // implementation("io.micronaut.security:micronaut-security-jwt")
+  //  implementation("io.micronaut.security:micronaut-security-oauth2")
+
+
+    // map struct
+    implementation 'org.mapstruct:mapstruct:1.5.2.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.2.Final'
+
+    implementation 'io.micronaut:micronaut-inject-java:3.7.2'
+    annotationProcessor("io.micronaut:micronaut-inject-java:3.7.2")
+
+    annotationProcessor("org.projectlombok:lombok")
+
+
+    annotationProcessor("io.micronaut:micronaut-http-validation")
+    annotationProcessor("io.micronaut.openapi:micronaut-openapi")
+    annotationProcessor("io.micronaut.data:micronaut-data-processor")
+    implementation("io.micronaut:micronaut-http-client")
+    implementation("io.micronaut.data:micronaut-data-hibernate-jpa")
+    implementation("io.micronaut:micronaut-jackson-databind")
+    implementation("io.micronaut.flyway:micronaut-flyway")
+    implementation("io.micronaut.sql:micronaut-hibernate-jpa")
+    implementation("io.micronaut.sql:micronaut-jdbc-hikari")
+    implementation("io.swagger.core.v3:swagger-annotations")
+    implementation("jakarta.annotation:jakarta.annotation-api")
+    runtimeOnly("ch.qos.logback:logback-classic")
+    compileOnly("org.projectlombok:lombok")
+    runtimeOnly("org.postgresql:postgresql")
+    testImplementation("org.testcontainers:junit-jupiter")
+    testImplementation("org.testcontainers:postgresql")
+    testImplementation("org.testcontainers:testcontainers")
+    implementation("io.micronaut:micronaut-validation:3.7.0")
+    implementation("io.micronaut:micronaut-aop:3.7.0")
+    testImplementation("org.mockito:mockito-core")
+    implementation("io.micronaut.rxjava3:micronaut-rxjava3:2.3.0")
+    implementation("io.micronaut.rxjava3:micronaut-rxjava3-http-client:2.3.0")
+
+
 
 }
 
@@ -52,5 +91,10 @@ micronaut {
     }
 }
 
+
+tasks.withType(JavaCompile) {
+    options.fork = true
+    options.forkOptions.jvmArgs << '-Dmicronaut.openapi.views.spec=rapidoc.enabled=true,swagger-ui.enabled=true,swagger-ui.theme=flattop,swagger-ui.oauth2RedirectUrl=http://localhost:8080/swagger-ui/oauth2-redirect.html'
+}
 
 

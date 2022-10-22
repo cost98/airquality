@@ -1,0 +1,31 @@
+version: '3.7'
+
+services:
+
+  keycloak1:
+    image: jboss/keycloak:16.1.1
+    volumes:
+      - ./keycloak/realms/import:/opt/jboss/keycloak/imports
+    command:
+        - "-b 0.0.0.0 -Dkeycloak.import=/opt/jboss/keycloak/imports/realm-export.json"
+    ports:
+      - "8888:8080"
+    env_file: local.env
+
+  postgres1:
+    container_name: postgres1
+    build:
+      context: .
+      dockerfile: Dockerfile-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: airquality
+    ports:
+      - "5432:5432"
+
+## By default this config uses default local driver,
+## For custom volumes replace with volume driver configuration.
+volumes:
+  postgres-data1:
