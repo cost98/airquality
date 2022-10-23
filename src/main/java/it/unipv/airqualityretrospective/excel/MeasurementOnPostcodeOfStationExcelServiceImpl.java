@@ -3,10 +3,14 @@ package it.unipv.airqualityretrospective.excel;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.data.model.Sort;
+import it.unipv.airqualityretrospective.domain.Country;
 import it.unipv.airqualityretrospective.domain.MeasurementOnPostcodeOfStation;
+import it.unipv.airqualityretrospective.domain.PostcodeOfStation;
 import it.unipv.airqualityretrospective.dto.MeasurementOnPostcodeOfStationDto;
 import it.unipv.airqualityretrospective.mapper.MeasurementOnPostcodeOfStationMapper;
+import it.unipv.airqualityretrospective.repository.CountryRepository;
 import it.unipv.airqualityretrospective.repository.MeasurementOnPostcodeOfStationRepository;
+import it.unipv.airqualityretrospective.repository.PostcodeOfStationRepository;
 import it.unipv.airqualityretrospective.specifications.CountrySpecifications;
 import it.unipv.airqualityretrospective.specifications.MeasurementOnPostcodeOfStationSpecifications;
 import jakarta.inject.Inject;
@@ -38,47 +42,46 @@ public class MeasurementOnPostcodeOfStationExcelServiceImpl implements Measureme
 
     private final MeasurementOnPostcodeOfStationRepository measurementOnPostcodeOfStationRepository;
 
+    private final CountryRepository countryRepository;
+
+    private final PostcodeOfStationRepository postcodeOfStationRepository;
+
+
     private final MeasurementOnPostcodeOfStationMapper measurementOnPostcodeOfStationMapper;
 
     @NonNull
     public SystemFile excelFileFromBooks(Date dateSx, Date dateDx, String country) {
         try {
             File file = File.createTempFile(HEADER_EXCEL_FILE_PREFIX, ".txt");
-           try(OutputStream outputStream = new FileOutputStream(file)) {
-
-               Page<MeasurementOnPostcodeOfStationDto> measuresPage = extractPage(1);
-               for (int i = 1; i < measuresPage.getTotalPages(); i++) {
-                   for (MeasurementOnPostcodeOfStationDto measure : measuresPage.getContent()) {
-                       if (measure.getTimestamp().after(dateSx) && measure.getTimestamp().before(dateDx) && measure.getCountry().equals(country)) {
-                           try {
-                               outputStream.write((measure.getMeasurement() + "\t" + measure.getPostcode() + "\n").getBytes());
-                           } catch (IOException e) {
-                               throw new RuntimeException(e);
-                           }
-                       }
-                   }
-               }
-
-               return new SystemFile(file).attach(HEADER_EXCEL_FILENAME);
-           }
+            Country country1 = countryRepository.findByNameLike(country);
+            List<PostcodeOfStation> postcodeOfStations = postcodeOfStationRepository.findByCountryIdEqual(country1.getId());
+            try(OutputStream outputStream = new FileOutputStream(file)) {
+                Page<MeasurementOnPostcodeOfStationDto> measuresPage = extractPage(1,dateSx,dateDx,postcodeOfStations);
+                for (int i = 1; i < measuresPage.getTotalPages(); i++) {
+                    measuresPage = extractPage(1,dateSx,dateDx,postcodeOfStations);
+                    for (MeasurementOnPostcodeOfStationDto measure : measuresPage.getContent()) {
+                        try {
+                            outputStream.write((measure.getMeasurement() + "\t" + measure.getPostcode() + "\n").getBytes());
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+            }
+            return new SystemFile(file).attach(HEADER_EXCEL_FILENAME);
         } catch (IOException e) {
             LOG.error("File not found exception raised when generating excel file");
         }
         throw new HttpStatusException(HttpStatus.SERVICE_UNAVAILABLE, "error generating excel file");
     }
 
-    public Page<MeasurementOnPostcodeOfStationDto> extractPage(Integer page){
+    public Page<MeasurementOnPostcodeOfStationDto> extractPage(Integer page, Date dateSx, Date dateDx, List<PostcodeOfStation> postcodeOfStations ){
         var pageable = Pageable.from(
                 Optional.ofNullable(page).orElse(0),
-                Optional.ofNullable(10).orElse(10),
-                Sort.of(
-                        new Sort.Order(
-                                "timestamp",
-                                Sort.Order.Direction.valueOf("ASC"),
-                                true)));
-        var data = measurementOnPostcodeOfStationRepository.findAll(MeasurementOnPostcodeOfStationSpecifications.filterByKeyword(""),pageable);
+                Optional.ofNullable(50000).orElse(10));
+        var data = measurementOnPostcodeOfStationRepository.findByTimestampAfterAndTimestampBeforeAndPostcodeInList(dateSx, dateDx, postcodeOfStations, pageable);
         var body = data.map(measurementOnPostcodeOfStationMapper::toDto);
         return body;
-}
+    }
 
 }

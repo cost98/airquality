@@ -34,4 +34,16 @@ public class MeasurementOnPostcodeOfStationDto implements Serializable {
 
     @NotNull
     private final String country;
+
+    @Override
+    public String toString() {
+        return "MeasurementOnPostcodeOfStationDto{" +
+                "id=" + id +
+                ", measurement=" + measurement +
+                ", postcode='" + postcode + '\'' +
+                ", timestamp=" + timestamp +
+                ", param='" + param + '\'' +
+                ", country='" + country + '\'' +
+                '}'+"\n";
+    }
 }
