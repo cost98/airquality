@@ -40,16 +40,16 @@ netty:
     oauth2:
       clients:
         keycloak:
-          client-id: crypto-service
+          client-id: airBackEnd
           openid:
-            issuer: ${KEYCLOAK_ISSUER:`http://localhost:8888/auth/realms/crypto`}
+            issuer: http://localhost:8888/auth/realms/airqualityVueJs
     token:
       jwt:
         enabled: true
         signatures:
           jwks:
             keycloak:
-              url: ${KEYCLOAK_JWKS_URL:`http://localhost:8888/auth/realms/crypto/protocol/openid-connect/certs`}
+              url: http://localhost:8888/auth/realms/airqualityVueJs/protocol/openid-connect/certs
     intercept-url-map:
       - pattern: /swagger/**
         httpMethod: GET

@@ -33,7 +33,7 @@ public class MeasurementOnPostcodeOfStation implements Serializable {
     private Double measurement;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "postcode", nullable = false)
     private PostcodeOfStation postcode;
 
@@ -42,7 +42,7 @@ public class MeasurementOnPostcodeOfStation implements Serializable {
     private Date timestamp;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "param", nullable = false)
     private Param param;
 

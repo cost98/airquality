@@ -92,20 +92,15 @@ public class AirqualityController {
     @ApiResponse(responseCode = "400", description = "Error in input")
     @Operation(operationId = "getMeasurement", summary = "Get measurements", description = "Measurement")
     @Transactional
-    public HttpResponse<Page<MeasurementOnPostcodeOfStationDto>> getMeasurement(@Nullable @QueryValue() String q,
-                                                                                @Nullable @QueryValue(defaultValue = "0") Integer page,
+    public HttpResponse<Page<MeasurementOnPostcodeOfStationDto>> getMeasurement(@Nullable @QueryValue(defaultValue = "0") Integer page,
                                                                                 @Nullable @QueryValue(defaultValue = "10") Integer size,
                                                                                 @Nullable @Pattern(regexp = "timestamp") @QueryValue(defaultValue = "timestamp") String sort,
                                                                                 @Nullable @Pattern(regexp = "asc|desc|ASC|DESC") @QueryValue(defaultValue = "asc") String order) {
         var pageable = Pageable.from(
                 Optional.ofNullable(page).orElse(0),
-                Optional.ofNullable(size).orElse(10),
-                Sort.of(
-                        new Sort.Order(
-                                Optional.ofNullable(sort).orElse("timestamp"),
-                                Sort.Order.Direction.valueOf(Optional.ofNullable(order).orElse("asc").toUpperCase()),
-                                true)));
-        var data = measurementOnPostcodeOfStationRepository.findAll(MeasurementOnPostcodeOfStationSpecifications.filterByKeyword(q),pageable);
+                Optional.ofNullable(size).orElse(10)
+        );
+        var data = measurementOnPostcodeOfStationRepository.findAll(pageable);
         var body = data.map(measurementOnPostcodeOfStationMapper::toDto);
         return ok(body);
     }

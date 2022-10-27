@@ -21,8 +21,8 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
         bearerFormat = "jwt",
         flows = @OAuthFlows(
                 clientCredentials = @OAuthFlow(
-                        tokenUrl = "http://localhost:8888/auth/realms/crypto/protocol/openid-connect/token",
-                        refreshUrl = "http://localhost:8888/auth/realms/crypto/protocol/openid-connect/token",
+                        tokenUrl = "http://localhost:8888/auth/realms/airqualityVueJs/protocol/openid-connect/token",
+                        refreshUrl = "http://localhost:8888/auth/realms/airqualityVueJs/protocol/openid-connect/token",
                         scopes = @OAuthScope(name = "offline_access", description = "OpenID role")
                 )
         )
