@@ -23,7 +23,16 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: airquality
     ports:
-      - "5432:5432"
+      - "5444:5432"
+
+  airquality:
+    image: costdev2022/project-airquality:0.1.0
+    depends_on:
+      - postgres1
+    ports:
+      - "9999:8080"
+    env_file: local.env
+
 
 ## By default this config uses default local driver,
 ## For custom volumes replace with volume driver configuration.
